@@ -25,3 +25,31 @@ class handDetector():
 
         return frame
     
+    def findPosition(self, frame, handNo = 0, draw = True):
+        self.lmList = []
+        if self.results.multi_hand_landmarks:
+            myHand = self.results.multi_hand_landmarks[handNo]
+            for id, lm in enumerate(myHand.landmark): # id is the landmark id and lm is the landmark object
+                h, w, c = frame.shape # height, width, channel
+                cx, cy = int(lm.x*w), int(lm.y*h) # cx and cy are the coordinates of the landmark
+                self.lmList.append([id, cx, cy]) # lmList is a list of lists containing the landmark id and its coordinates
+                if draw:
+                    cv2.circle(frame, (cx, cy), 7, (255, 0, 0), cv2.FILLED)
+        return self.lmList
+    
+    def fingersUp(self):
+        fingers = []
+        tipIds = [4, 8, 12, 16, 20]
+        # Thumb
+        if self.lmList[tipIds[0]][1] < self.lmList[tipIds[0]-1][1]:
+            fingers.append(1)
+        else:
+            fingers.append(0)
+
+        # 4 Fingers
+        for id in range(1, 5):
+            if self.lmList[tipIds[id]][2] < self.lmList[tipIds[id]-2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+        return fingers
