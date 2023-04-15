@@ -1,3 +1,5 @@
+# Only An Exercise
+
 import mediapipe as mp
 import cv2
 
